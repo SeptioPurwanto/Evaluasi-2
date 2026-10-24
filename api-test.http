@@ -1,0 +1,103 @@
+@baseUrl = http://127.0.0.1:8000/api
+
+### 1. Register
+POST {{baseUrl}}/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Yohan",
+  "email": "yohan@example.com",
+  "password": "rahasia123"
+}
+
+### 2. Login (akun seeder: admin@sneakerlab.test / password)
+# @name login
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@sneakerlab.test",
+  "password": "password"
+}
+
+### 3. Login salah (harus 422)
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@sneakerlab.test",
+  "password": "salah"
+}
+
+### 4. Produk TANPA token (harus 401 Unauthenticated)
+GET {{baseUrl}}/products
+Accept: application/json
+
+### 5. Profil (pakai token)
+GET {{baseUrl}}/profile
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+### 6. Daftar produk (paginate 10)
+GET {{baseUrl}}/products
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+### 7. Tambah produk
+# @name createProduct
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "name": "Sepatu Uji API",
+  "description": "Produk dibuat lewat REST API",
+  "category_id": 1,
+  "price": 399000,
+  "stock": 12
+}
+
+### 8. Detail produk
+GET {{baseUrl}}/products/{{createProduct.response.body.data.id}}
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+### 9. Ubah produk
+PUT {{baseUrl}}/products/{{createProduct.response.body.data.id}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "name": "Sepatu Uji API Pro",
+  "description": "Sudah diubah",
+  "category_id": 2,
+  "price": 449000,
+  "stock": 8
+}
+
+### 10. Validasi gagal (harus 422)
+POST {{baseUrl}}/products
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "name": "",
+  "category_id": 999,
+  "price": "mahal"
+}
+
+### 11. Hapus produk
+DELETE {{baseUrl}}/products/{{createProduct.response.body.data.id}}
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+### 12. Logout
+POST {{baseUrl}}/logout
+Accept: application/json
+Authorization: Bearer {{login.response.body.token}}
